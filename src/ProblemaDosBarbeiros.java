@@ -6,19 +6,33 @@ public class ProblemaDosBarbeiros {
         int qtdClientes = Integer.parseInt(args[2]);
         int i;
 
+        Barbearia barbearia = new Barbearia(qtdBarbeiros, qtdCadeiras, qtdClientes);
+
         Thread[] threads = new Thread[qtdBarbeiros+qtdClientes];
 
         Barbeiro[] barbeiros = new Barbeiro[qtdBarbeiros];
         for (i = 0; i < qtdBarbeiros; i++) {
-            barbeiros[i] = new Barbeiro(i+1);
+            barbeiros[i] = new Barbeiro(i+1, barbearia);
             threads[i] =  new Thread(barbeiros[i]);
         }
 
         Cliente[] clientes = new Cliente[qtdClientes];
         for(int j = 0; j < qtdClientes; j++,i++) {
-            clientes[j] = new Cliente(i);
-            threads[i] =  new Thread(clientes[i]);
+            clientes[j] = new Cliente(j+1, barbearia);
+            threads[i] =  new Thread(clientes[j]);
         }
+
+//        Cliente[] clientes = new Cliente[qtdClientes];
+//        //boolean[] vetClientes = new boolean[qtdClientes];
+//        for(int j = 0; j < qtdClientes; j++,i++) {
+//            clientes[j] = new Cliente(i, barbearia);
+//            threads[i] =  new Thread(clientes[i]);
+//            //vetClientes[j] = false;
+//            //threads[i] =  new Thread(new Cliente(i, barbearia));
+//        }
+
+        barbearia.setClientes(clientes);
+        barbearia.setBarbeiros(barbeiros);
 
         for (Thread t : threads)
             t.start();
