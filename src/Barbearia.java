@@ -1,29 +1,30 @@
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Barbearia {
-    private static int qtdBarbeiros;
-    private static int qtdCadeiras;
-    private static int qtdClientes;
-    private static int qtdCadeirasDisponiveis;
-    private static int qtdBarbeirosDisponiveis;
-    private static Queue<Cliente> filaEspera;
+    private int qtdBarbeiros;
+    private int qtdCadeiras;
+    private int qtdClientes;
+    private int qtdCadeirasDisponiveis;
+    private int qtdBarbeirosDisponiveis;
+    private Queue<Cliente> filaEspera;
 
     public Barbearia(int qtdBarbeiros, int qtdCadeiras, int qtdClientes) {
-        Barbearia.qtdBarbeiros = qtdBarbeiros;
-        Barbearia.qtdCadeiras = qtdCadeiras;
-        Barbearia.qtdClientes = qtdClientes;
-        Barbearia.qtdCadeirasDisponiveis = qtdCadeiras;
-        Barbearia.qtdBarbeirosDisponiveis = qtdBarbeiros;
-        Barbearia.filaEspera = new LinkedList<Cliente>();
+        this.qtdBarbeiros = qtdBarbeiros;
+        this.qtdCadeiras = qtdCadeiras;
+        this.qtdClientes = qtdClientes;
+        this.qtdCadeirasDisponiveis = qtdCadeiras;
+        this.qtdBarbeirosDisponiveis = qtdBarbeiros;
+        this.filaEspera = new LinkedBlockingQueue<Cliente>(qtdCadeiras);
     }
 
     // Operação chamada pelos clientes:
 
     // Se a barbearia não estiver lotada, espera que o corte seja feito e retorna TRUE.
     // Se a barbearia estiver lotada, retorna FALSE.
-    public static synchronized boolean cortaCabelo(Cliente c) {
+    public synchronized boolean cortaCabelo(Cliente c) {
         if(barbeariaLotada()) { //se todos os barbeiros estiverem ocupados ou a fila de espera estiver cheia
             return false;
         }
@@ -37,7 +38,7 @@ public class Barbearia {
         }
     }
 
-    private static boolean barbeariaLotada() {
+    private boolean barbeariaLotada() {
         if (qtdCadeirasDisponiveis == 0 && qtdBarbeirosDisponiveis == 0)
             return true;
         else
@@ -47,19 +48,19 @@ public class Barbearia {
     // Operações chamadas pelos barbeiros:
 
     // Seleciona o próximo cliente (dentro desta chamada o barbeiro pode dormir esperando um cliente).
-    public static synchronized Cliente proximoCliente() {
-        if (filaEspera.isEmpty()){
-            //printa “Barbeiro Y indo dormir um pouco… não há clientes na barbearia...”
-            //bloqueia barbeiro
+    public synchronized Cliente proximoCliente() {
+        if (filaEspera.isEmpty())
+            return null;
+        else {
+            qtdCadeirasDisponiveis--;
+            return filaEspera.poll();
         }
-        //printa “Barbeiro Y acordou! Começando os trabalhos!”
-        //retira cliente da fila de espera
-        return filaClientes.pop();
     }
 
     // O barbeiro acorda o cliente que está na sua cadeira e espera que ele saia da barbearia
     // (tome cuidado para acordar o cliente certo).
-    public static synchronized void corteTerminado(Cliente c) {
+    public synchronized void corteTerminado(Cliente c) {
+        notifyAll();
         //acorda cliente
         //se bloqueia ("espera que ele saia da barbearia")
     }
