@@ -67,10 +67,10 @@ public class Barbearia {
 
     // Seleciona o próximo cliente (dentro desta chamada o barbeiro pode dormir esperando um cliente).
     public synchronized Cliente proximoCliente(int idBarbeiro) {
+        boolean dormiu = false;
         //Se não tiver clientes na fila de espera
-        //Para os barbeiros é feito notify(), por isso não é necessário colocar o wait dentro de um loop
-        //O barbeiro que recebe o notify() é o próximo a receber a posse da CPU, por isso não é necessário retestar a condição?
-        if (filaEspera.isEmpty()) {
+        while (filaEspera.isEmpty()) {
+            dormiu = true;
             System.out.println("Barbeiro " + idBarbeiro +
                     " indo dormir um pouco… não há clientes na barbearia...");
             try {
@@ -80,7 +80,8 @@ public class Barbearia {
             }
         }
         this.qtdBarbeirosDisponiveis--;
-        System.out.println("Barbeiro " + idBarbeiro + " acordou! Começando os trabalhos!");
+        if (dormiu)
+            System.out.println("Barbeiro " + idBarbeiro + " acordou! Começando os trabalhos!");
 
         //qtdCadeirasDisponiveis++;
         return filaEspera.poll();

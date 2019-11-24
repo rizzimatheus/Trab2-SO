@@ -16,6 +16,7 @@ public class Barbeiro extends Pessoa implements Runnable {
         Cliente cliente;
         while (true) {
             cliente = barbearia.proximoCliente(this.getID());
+            System.out.println("Cliente " + cliente.getID() + " cortando cabelo com Barbeiro " + this.getID());
 
             //Espera de 3 a 5 segundos
             try {
@@ -24,7 +25,6 @@ public class Barbeiro extends Pessoa implements Runnable {
                 e.printStackTrace();
             }
 
-            System.out.println("Cliente " + cliente.getID() + " cortando cabelo com Barbeiro " + this.getID());
             barbearia.corteTerminado(cliente);
 
             //Espera de 3 a 5 segundos
