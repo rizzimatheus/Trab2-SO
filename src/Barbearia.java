@@ -1,7 +1,4 @@
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class Barbearia {
     //private int qtdBarbeiros;
@@ -21,7 +18,7 @@ public class Barbearia {
         //this.qtdCadeiras = qtdCadeiras;
         //this.qtdClientes = qtdClientes;
         //qtdCadeirasDisponiveis = qtdCadeiras;
-        qtdClientesRestantes = qtdClientes;
+        //qtdClientesRestantes = qtdClientes;
         qtdBarbeirosDisponiveis = qtdBarbeiros;
         filaEspera = new LinkedBlockingQueue<Cliente>(qtdCadeiras);
     }
@@ -30,20 +27,19 @@ public class Barbearia {
 
     // Se a barbearia não estiver lotada, espera que o corte seja feito e retorna TRUE.
     // Se a barbearia estiver lotada, retorna FALSE.
-    public synchronized boolean cortaCabelo(Cliente c) {
+    public synchronized boolean cortaCabelo(Cliente cliente) {
         if(barbeariaLotada()) { //se todos os barbeiros estiverem ocupados e a fila de espera estiver cheia
             return false;
         }
         else {
-            filaEspera.offer(c);
-            //qtdCadeirasDisponiveis--;
-            System.out.println("Cliente " + c.getID() + " esperando corte...");
+            filaEspera.offer(cliente);
+            System.out.println("Cliente " + cliente.getID() + " esperando corte...");
+
             acordarClientes = false;
             acordarBarbeiros = true;
             notifyAll();
-            //barbeiros.notify();
 
-            while (acordarClientes == false || clientes[c.getID()-1].getAcordar() == false)  {
+            while (acordarClientes == false || clientes[cliente.getID()-1].getAcordar() == false)  {
                 try {
                     wait();
                 } catch (InterruptedException e) {
@@ -70,9 +66,10 @@ public class Barbearia {
         boolean dormiu = false;
         //Se não tiver clientes na fila de espera
         while (filaEspera.isEmpty()) {
+            if (!dormiu)
+                System.out.println("Barbeiro " + idBarbeiro +
+                        " indo dormir um pouco… não há clientes na barbearia...");
             dormiu = true;
-            System.out.println("Barbeiro " + idBarbeiro +
-                    " indo dormir um pouco… não há clientes na barbearia...");
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -83,20 +80,21 @@ public class Barbearia {
         if (dormiu)
             System.out.println("Barbeiro " + idBarbeiro + " acordou! Começando os trabalhos!");
 
-        //qtdCadeirasDisponiveis++;
-        return filaEspera.poll();
+        Cliente cliente = filaEspera.poll();
+        System.out.println("Cliente " + cliente.getID() + " cortando cabelo com Barbeiro " + idBarbeiro);
+        return cliente;
     }
 
     // O barbeiro acorda o cliente que está na sua cadeira e espera que ele saia da barbearia
     // (tome cuidado para acordar o cliente certo).
-    public synchronized void corteTerminado(Cliente c) {
+    public synchronized void corteTerminado(Cliente cliente) {
         //tornar verdadeira a condição do cliente 'c' ser acordado
-        c.setAcordar(true);
+        cliente.setAcordar(true);
         acordarClientes = true;
         acordarBarbeiros = false;
         notifyAll();
         //bloqueia barbeiro??? ("espera que ele (o cliente) saia da barbearia")
-        qtdClientesRestantes--;
+        //qtdClientesRestantes--;
         qtdBarbeirosDisponiveis++;
     }
 
@@ -121,7 +119,16 @@ public class Barbearia {
         this.barbeiros = barbeiros;
     }
 
-    public synchronized int getQtdClientesRestantes() {
-        return qtdClientesRestantes;
+//    public synchronized int getQtdClientesRestantes() {
+//        return qtdClientesRestantes;
+//    }
+
+    public String filaToString() {
+        String s = "[";
+        for (Cliente c: filaEspera) {
+            s = s + c.getID() + ", ";
+        }
+        s = s + "]";
+        return s;
     }
 }
