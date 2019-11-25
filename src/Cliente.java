@@ -11,7 +11,16 @@ public class Cliente extends Pessoa implements Runnable{
 
     @Override
     public void run() {
-        while(!barbearia.cortaCabelo(this)) {
+        while(true) {
+            while (!barbearia.cortaCabelo(this)) {
+                try {
+                    Thread.sleep(ThreadLocalRandom.current().nextInt(3000, 5000));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            //Cliente deve ficar em loop chamando cortaCabelo(). Dê um intervalo entre 3 e 5 seg a cada loop.
+            //Precisa desse LOOP?
             try {
                 Thread.sleep(ThreadLocalRandom.current().nextInt(3000, 5000));
             } catch (InterruptedException e) {

@@ -90,18 +90,11 @@ public class Barbearia {
                 System.out.println("Barbeiro " + idBarbeiro +
                         " indo dormir um pouco… não há clientes na barbearia...");
             dormiu = true;
-            //Gambiarra para o programa encerrar quando todos os clientes forem atendidos
-            if (encerrar) {
-                return null;
-            }
+
             try {
                 wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
-            //Gambiarra para o programa encerrar quando todos os clientes forem atendidos
-            if (encerrar) {
-                return null;
             }
         }
         qtdBarbeirosDisponiveis--;
@@ -134,20 +127,6 @@ public class Barbearia {
         qtdBarbeirosDisponiveis++;
         qtdClientesRestantes--;
     }
-
-    //Gambiarra para o programa encerrar quando todos os clientes forem atendidos
-    public synchronized boolean terminou(int barbeiroID) {
-        System.out.println("Barbeiro "+ barbeiroID + " ENTROU NO TERMINOU(). CLIENTES RESTANTES: " + qtdClientesRestantes);
-        if (qtdClientesRestantes == 0) {
-            encerrar = true;
-            acordarBarbeiros = true;
-            notifyAll();
-            return true;
-        }
-        else
-            return false;
-    }
-
 
     public void setClientes(Cliente[] clientes) {
         this.clientes = clientes;
