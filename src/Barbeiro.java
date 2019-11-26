@@ -14,18 +14,18 @@ public class Barbeiro extends Pessoa implements Runnable {
         while (true) {
             cliente = barbearia.proximoCliente(this.getID());
 
-            //Espera de 3 a 5 segundos
+            //Espera de 1 a 3 segundos
             try {
-                Thread.sleep(ThreadLocalRandom.current().nextInt(3000, 5000));
+                Thread.sleep(ThreadLocalRandom.current().nextInt(1000, 3000));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
             barbearia.corteTerminado(cliente);
 
-            //Espera de 3 a 5 segundos
+            //Espera de 1 a 3 segundos
             try {
-                Thread.sleep(ThreadLocalRandom.current().nextInt(3000, 5000));
+                Thread.sleep(ThreadLocalRandom.current().nextInt(1000, 3000));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
