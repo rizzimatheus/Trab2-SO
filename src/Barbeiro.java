@@ -2,6 +2,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Barbeiro extends Pessoa implements Runnable {
     private Barbearia barbearia;
+    private boolean acordar = false;
 
     public Barbeiro(int id, Barbearia b) {
         super(id);
@@ -30,5 +31,13 @@ public class Barbeiro extends Pessoa implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    public boolean getAcordar() {
+        return acordar;
+    }
+
+    public void setAcordar(boolean acordar) {
+        this.acordar = acordar;
     }
 }
